@@ -1,7 +1,7 @@
 ---
 name: qqmusic
 description: QQ Music — search songs, albums, playlists, music videos, artists; daily recommendations; music charts & rankings; AI-powered playlists; personalized listening reports & music insights. QQ音乐官方智能助手：搜索、每日推荐、排行榜、AI歌单、听歌报告、AI解读。
-version: 0.0.1
+version: 0.0.2
 ---
 
 # QQ音乐官方智能助手
@@ -52,8 +52,18 @@ POST ${BaseUrl}{path}
 - Header：`Authorization: Bearer $QQMUSIC_API_KEY`
 - API Key 格式 `qmk-xxxxxxxx`，与用户账号绑定，需要用户身份的接口会自动识别调用者
 - 获取 API Key：<https://y.qq.com/n/ryqq_v2/qqmusic_skills>
-- API Key 可以放在环境变量里（`export QQMUSIC_API_KEY=qmk-xxx`），skill 会自动读取该环境变量进行鉴权
-- 用户没提供 key 时会返回错误码，提示用户提供 API Key 即可
+- 鉴权依赖环境变量 `$QQMUSIC_API_KEY`
+
+**Key 初始化流程（首次使用或 Key 未设置时）：**
+
+1. 先执行 `echo $QQMUSIC_API_KEY` 检查是否已设置
+2. 已设置则直接使用，跳过后续步骤
+3. 未设置则主动询问用户提供 Key
+4. 用户提供后，检测当前 Shell 类型，将 `export QQMUSIC_API_KEY="<API Key>"` 写入对应 profile：
+   - bash → `~/.bashrc`
+   - zsh → `~/.zshrc`
+   - 写入前检查是否已有旧的 QQMUSIC_API_KEY 配置，有则替换
+5. 写入后执行 `source <profile文件>` 使其立即生效，然后继续后续调用
 
 ### 请求格式
 
@@ -65,7 +75,7 @@ POST ${BaseUrl}{path}
 curl -X POST "${BaseUrl}/discover/search" \
   -H "Authorization: Bearer $QQMUSIC_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"params": {"keyword": "周杰伦", "type": "0"}, "comm": {"skill_version": "0.0.1"}}'
+  -d '{"params": {"keyword": "周杰伦", "type": "0"}, "comm": {"skill_version": "0.0.2"}}'
 ```
 
 | 字段                   | 类型     | 必填 | 说明                               |
@@ -85,7 +95,7 @@ curl -X POST "${BaseUrl}/discover/search" \
     "type": "0"
   },
   "comm": {
-    "skill_version": "0.0.1"
+    "skill_version": "0.0.2"
   }
 }
 ```
@@ -96,7 +106,7 @@ curl -X POST "${BaseUrl}/discover/search" \
 {
   "keyword": "周杰伦",
   "type": "0",
-  "skill_version": "0.0.1"
+  "skill_version": "0.0.2"
 }
 ```
 
@@ -138,11 +148,12 @@ curl -X POST "${BaseUrl}/discover/search" \
 
 ### 通用规则
 
-1. **版本上报**：每次请求 `comm` 中必须携带 `"skill_version": "0.0.1"`（取本文件顶部 version 字段的值）
+1. **版本上报**：每次请求 `comm` 中必须携带 `"skill_version": "0.0.2"`（取本文件顶部 version 字段的值）
 2. **参数包裹**：业务参数必须放在 `params` 对象内；`comm` 中仅放公共参数。
 3. **能力文档预检**：调用任何接口前，必须先根据「支持的能力」表阅读对应说明文件，确认接口参数和字段含义；禁止仅凭字段名猜测。
 4. **结果展示**：列表用编号展示；歌曲展示歌名 + 歌手；有 H5 链接时附带「播放」链接，各能力的输出格式详见对应能力说明文件。
 5. **上下文衔接**：对话中记住已查询的歌曲、歌手，后续操作无需重复提供。
+6. **禁止内联 Key**：所有 curl 命令中**必须使用 `$QQMUSIC_API_KEY` 环境变量**，绝对禁止在 curl 命令行里出现真实的 Key 值（如 `-H "Authorization: Bearer qmk-xxx"`）。把 Key 写入 Shell profile 是一次性的初始化操作，不在此限。
 
 ---
 

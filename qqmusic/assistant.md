@@ -23,7 +23,7 @@
 curl -N -X POST "${BaseUrl}/assistant/ai_interpretation" \
   -H "Authorization: Bearer $QQMUSIC_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"params": {"query": "分析我的听歌风格"}, "comm": {"skill_version": "0.0.1"}}'
+  -d '{"params": {"query": "分析我的听歌风格"}, "comm": {"skill_version": "0.0.2"}}'
 ```
 
 > 必须加 `curl -N` 关闭输出缓冲，否则看不到流式效果。
