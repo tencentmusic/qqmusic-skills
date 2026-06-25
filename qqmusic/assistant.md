@@ -23,7 +23,7 @@
 curl -N -X POST "${BaseUrl}/assistant/ai_interpretation" \
   -H "Authorization: Bearer $QQMUSIC_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"params": {"query": "分析我的听歌风格"}, "comm": {"skill_version": "0.0.2"}}'
+  -d '{"params": {"query": "分析我的听歌风格"}, "comm": {"skill_version": "0.0.3"}}'
 ```
 
 > 必须加 `curl -N` 关闭输出缓冲，否则看不到流式效果。
@@ -36,6 +36,5 @@ curl -N -X POST "${BaseUrl}/assistant/ai_interpretation" \
 
 1. 用户提出"分析/解读/画像"等围绕自己听歌记录的开放式问题：调 `/assistant/ai_interpretation`，把用户原话稍作整理后填入`query`，如果是追问，需要把上下文一起加入`query`。
 2. 仅当用户明确要求总结一下、提炼要点、给个结论等收口性输出时，在流结束后基于完整响应再生成一段总结，作为对原始流式内容的补充，不要替换或重写已经展示出来的流式内容。
-3. 若返回登录态错误，提示用户登录后重试。
-4. 若用户问的是结构化数据（"我今天听了几小时"、"我连续听了几天"等可量化的），优先用 `me.md`（`/me/report`）拿确切数字，不要用本接口。
-5. 如果用户需要的是解读类的内容，直接调AI解读接口即可，如果要的是精确的数据，可以调听歌报告接口
+3. 若用户问的是结构化数据（"我今天听了几小时"、"我连续听了几天"等可量化的），优先用 `me.md`（`/me/report`）拿确切数字，不要用本接口。
+4. 如果用户需要的是解读类的内容，直接调AI解读接口即可，如果要的是精确的数据，可以调听歌报告接口

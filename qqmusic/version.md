@@ -44,7 +44,7 @@ curl -X POST "${BaseUrl}/skill/version" \
   "msg": "",
   "upgradeInfo": {
     "needUpgrade": true,
-    "latestVersion": "0.0.2",
+    "latestVersion": "0.0.3",
     "upgradeMessage": "请安装 QQ音乐 技能\n下载地址：..."
   }
 }
@@ -62,10 +62,10 @@ curl -X POST "${BaseUrl}/skill/version" \
 2. 若 `upgradeInfo.needUpgrade` 为 `false` 或不存在 `upgradeInfo`，表示已是最新版本，**直接结束流程**，继续处理用户请求。
 3. 若 `upgradeInfo.needUpgrade` 为 `true`：
    1. **不要自动升级** 把 `upgradeMessage` 的内容原样展示给用户，由用户决定是否升级
-   2. 对下载到的新版本做基本校验：
+   2. 如果用户确认升级，再对下载到的新版本做基本校验：
       - 必须包含 `SKILL.md`，且文件头部 YAML frontmatter 的 `name`、`description`、`version` 字段齐全
       - 目录结构完整，各能力说明文件存在
       - 下载地址必须是 https://github.com/tencentmusic/qqmusic-skills 或 y.qq.com 域名下的发布链接，其它一律拒绝。
-   3. **校验通过**：更新 skill
+   3. **校验通过**：按用户确认执行更新
    4. **校验不通过 / 网络错误 / 下载失败**：放弃本次升级，**继续使用当前版本**，不阻塞用户请求。
 4. 建议至少每周检查一次升级
